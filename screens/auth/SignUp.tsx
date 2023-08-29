@@ -15,35 +15,26 @@ export default function SignUpScreen({ navigation }) {
     password: '',
     termsAccepted: false
   });
-  const [isFormValid, setIsFormValid] = useState(false); // Step 1
 
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setValues({ ...values, [field]: value });
-    updateFormValidation(field, value); // Step 2
+  const handleInputChange = (field: string, value: any) => {
+    setValues(prevValues => ({
+      ...prevValues,
+      [field]: value
+    }));
   };
 
-  const updateFormValidation = (field: string, value: string | boolean) => {
-    const isValid =
-      values.termsAccepted &&
-      values.name !== '' &&
-      values.surname !== '' &&
-      values.email !== '' &&
-      (values.password as string).length >= 8; // Cast password to string
-    console.log(isValid);
-    setIsFormValid(isValid);
-  };
+  const isFormValid = values.password.length >= 8 && values.termsAccepted;
 
   const handleSignUp = async () => {
     try {
-      const user = await signUp(values.email, values.password);
-      if (user) {
-        await saveUser(user, values.name, values.surname);
-      }
+      const user = await signUp(
+        values.email,
+        values.password,
+        values.name,
+        values.surname
+      );
     } catch (error) {}
   };
-  React.useEffect(() => {
-    console.log(isFormValid);
-  }, [isFormValid]);
 
   return (
     <MainContainer>
@@ -81,7 +72,7 @@ export default function SignUpScreen({ navigation }) {
         }
       />
       <Button
-        disabled={isFormValid}
+        disabled={!isFormValid}
         buttonText='Crear cuenta'
         onPress={handleSignUp}
         linkLabel='¿Ya tienes una cuenta?'

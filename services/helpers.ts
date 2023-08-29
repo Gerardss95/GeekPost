@@ -1,26 +1,62 @@
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User} from 'firebase/auth';
-import {auth, db, app} from './config';
-import { collection, addDoc} from "firebase/firestore";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  User
+} from 'firebase/auth';
+import { auth, db, app, storage } from './config';
+import {
+  collection,
+  addDoc,
+  getDoc,
+  doc,
+  setDoc,
+  query,
+  orderBy,
+  getDocs
+} from 'firebase/firestore';
+import { ref, getDownloadURL } from 'firebase/storage';
 
-export const signUp = async (email: string, password: string) => {
+export const signUp = async (
+  email: string,
+  password: string,
+  name: string,
+  surname: string
+) => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     const user = userCredential.user;
+    if (user) {
+      await saveUser(user, name, surname);
+    }
     return user;
   } catch (error) {
     throw error;
   }
-}
+};
 
 export const signIn = async (email: string, password: string) => {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     const user = userCredential.user;
-    return user;
+    if (user) {
+      const userData = await getUser(user.uid);
+      return { uid: user.uid, ...userData };
+    }
+    return null;
   } catch (error) {
     throw error;
   }
-}
+};
 
 export const signOutUser = async () => {
   try {
@@ -28,24 +64,58 @@ export const signOutUser = async () => {
   } catch (error) {
     throw error;
   }
-}
+};
 
-export const onAuthStateChange = (callback: any) => {
-  return onAuthStateChanged(auth, callback);
-}
-
-
-//create a function that saves name and surname into the firestore database
-export const saveUser = async (user: User, name: string, surname: string) => {
+const saveUser = async (user: User, name: string, surname: string) => {
+  const usersRef = collection(db, 'users');
   try {
-  const docRef = await addDoc(collection(db, "users"), {
-    name: name,
-    surname: surname,
-    email: user.email
-  });
-  return docRef
-} catch (e) {
-  throw e;
-}
-}
+    const docRef = await setDoc(doc(usersRef, user.uid), {
+      name: name,
+      surname: surname
+    });
+    return docRef;
+  } catch (e) {
+    throw e;
+  }
+};
 
+export const getUser = async (id: string) => {
+  try {
+    const docRef = await getDoc(doc(db, 'users', id));
+    return docRef.data();
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const uploadPost = async (post: any) => {
+  try {
+    const docRef = await addDoc(collection(db, 'posts'), post);
+    return docRef;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const getPosts = async () => {
+  try {
+    const postsRef = collection(db, 'posts');
+    const postsQuery = query(postsRef, orderBy('createdAt', 'desc'));
+    const querySnapshot = await getDocs(postsQuery);
+    const posts = querySnapshot.docs.map(doc => {
+      return { id: doc.id, ...doc.data() };
+    });
+    return posts;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const getPost = async (id: string) => {
+  try {
+    const docRef = await getDoc(doc(db, 'posts', id));
+    return docRef.data();
+  } catch (e) {
+    throw e;
+  }
+};
