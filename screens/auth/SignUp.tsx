@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import Button from '../../components/Button';
 import TermsCheckbox from '../../components/TermsCheckbox';
 import { TitleText } from '../../components/Text';
-import { signUp, saveUser } from '../../services/helpers';
+import { signUp } from '../../services/helpers';
 
 export default function SignUpScreen({ navigation }) {
   const [values, setValues] = useState({

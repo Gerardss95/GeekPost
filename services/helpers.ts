@@ -2,10 +2,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged,
   User
 } from 'firebase/auth';
-import { auth, db, app, storage } from './config';
+import { auth, db } from './config';
 import {
   collection,
   addDoc,
@@ -16,7 +15,6 @@ import {
   orderBy,
   getDocs
 } from 'firebase/firestore';
-import { ref, getDownloadURL } from 'firebase/storage';
 
 export const signUp = async (
   email: string,
@@ -117,5 +115,21 @@ export const getPost = async (id: string) => {
     return docRef.data();
   } catch (e) {
     throw e;
+  }
+};
+
+export const getOneUserPosts = async (userId: string) => {
+  try {
+    const postsRef = collection(db, 'posts');
+    const postsQuery = query(postsRef, orderBy('createdAt', 'desc'));
+    const querySnapshot = await getDocs(postsQuery);
+
+    const userPosts = querySnapshot.docs
+      .filter(doc => doc.data().userId === userId)
+      .map(posts => ({ id: posts.id, ...posts.data() }));
+
+    return userPosts;
+  } catch (error) {
+    throw error;
   }
 };

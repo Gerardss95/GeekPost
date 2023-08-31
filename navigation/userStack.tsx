@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/Home';
 import NewPost from '../screens/NewPost';
 import OnePost from '../screens/OnePost';
+import OneUser from '../screens/OneUser';
 
 const Stack = createStackNavigator();
 
@@ -17,6 +18,7 @@ export default function UserStack() {
         <Stack.Screen name='Home' component={HomeScreen} />
         <Stack.Screen name='NewPost' component={NewPost} />
         <Stack.Screen name='OnePost' component={OnePost} />
+        <Stack.Screen name='OneUser' component={OneUser} />
       </Stack.Navigator>
     </NavigationContainer>
   );

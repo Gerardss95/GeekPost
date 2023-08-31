@@ -33,8 +33,8 @@ export default function HomeScreen({ navigation }) {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('OnePost', {
-                  id: item.id
+                navigation.navigate('OneUser', {
+                  id: item.userId
                 });
               }}
             >

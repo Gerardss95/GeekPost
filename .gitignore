@@ -4,3 +4,7 @@ dist/
 
 # Expo
 .expo
+
+# .env
+.env
+.env*.local

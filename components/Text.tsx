@@ -6,6 +6,11 @@ export const TitleText = styled.Text`
   text-align: center;
   margin-top: 90px;
 `;
+export const ProfileTitleText = styled.Text`
+  font-family: 'MontserratBold';
+  font-size: 20px;
+`;
+
 export const RegularTextBold = styled.Text`
   font-family: 'MontserratBold';
   font-size: 16px;
